@@ -4,7 +4,6 @@ import SwiftUI
 /// A value row for list which contains an image, a leading label, and a trailing value.
 ///
 /// Customization methods:
-/// - ``withProperties(_:)``
 /// - ``withContent(alignment:)``
 /// - ``withImage(foreground:)``
 /// - ``withLabel(font:)``
@@ -12,11 +11,9 @@ import SwiftUI
 ///
 public struct ValueRow: View {
     
-    private var components = ValueRowComponents()
-    
-    private var properties = ValueRowProperties()
-    
-    private var actions = ValueRowActions()
+    private var components = Components()
+    private var properties = Properties()
+    private var actions = Actions()
         
     public var body: some View {
         Label(title: titleView, icon: imageView)
@@ -54,9 +51,7 @@ public struct ValueRow: View {
 extension ValueRow {
     
     public init(label: Text, image: Image? = nil, value: Text) {
-        components.image = image
-        components.label = label
-        components.value = value
+        components = Components(image: image, label: label, value: value)
     }
     
     public init(_ label: LocalizedStringKey, image: Image? = nil, value: LocalizedStringKey) {
@@ -77,140 +72,154 @@ extension ValueRow {
 }
 
 
-// MARK: - Configuration
+// MARK: - Setter
 
 extension ValueRow {
     
-    // MARK: Properties
-    
-    private func withProperties<T>(_ keyPath: WritableKeyPath<ValueRowProperties, T>, _ value: T) -> ValueRow {
+    private func withKeyPath<T>(_ path: WritableKeyPath<ValueRow, T>, _ value: T) -> Self {
         var current = self
-        current.properties[keyPath: keyPath] = value
+        current[keyPath: path] = value
         return current
     }
     
-    public func withProperties(_ properties: ValueRowProperties) -> ValueRow {
-        withProperties(\.self, properties)
+    public func withProperties<T>(_ path: WritableKeyPath<Properties, T>, _ value: T) -> Self {
+        withKeyPath((\Self.properties).appending(path: path), value)
     }
     
-    public func withContent(alignment: VerticalAlignment) -> ValueRow {
+    public func withActions<T>(_ path: WritableKeyPath<Actions, T>, _ value: T) -> Self {
+        withKeyPath((\Self.actions).appending(path: path), value)
+    }
+}
+
+
+// MARK: - Convenient Setter
+
+extension ValueRow {
+    
+    // MARK: Content
+    
+    public func withContent(alignment: VerticalAlignment) -> Self {
         withProperties(\.content.alignment, alignment)
     }
     
-    public func withContent(spacing: CGFloat?) -> ValueRow {
+    public func withContent(spacing: CGFloat?) -> Self {
         withProperties(\.content.spacing, spacing)
     }
     
-    public func withImage(font: Font?) -> ValueRow {
+    // MARK: Image
+    
+    public func withImage(font: Font?) -> Self {
         withProperties(\.image.font, font)
     }
     
-    public func withImage(scale: Image.Scale) -> ValueRow {
+    public func withImage(scale: Image.Scale) -> Self {
         withProperties(\.image.scale, scale)
     }
     
-    public func withImage(foreground: Color) -> ValueRow {
+    public func withImage(foreground: Color) -> Self {
         withProperties(\.image.foreground, foreground)
     }
     
-    public func withLabel(font: Font?) -> ValueRow {
+    // MARK: Label
+    
+    public func withLabel(font: Font?) -> Self {
         withProperties(\.label.font, font)
     }
     
-    public func withLabel(foreground: Color) -> ValueRow {
+    public func withLabel(foreground: Color) -> Self {
         withProperties(\.label.foreground, foreground)
     }
     
-    public func withLabel(lineLimit: Int?) -> ValueRow {
+    public func withLabel(lineLimit: Int?) -> Self {
         withProperties(\.label.lineLimit, lineLimit)
     }
     
-    public func withValue(font: Font?) -> ValueRow {
+    // MARK: Value
+    
+    public func withValue(font: Font?) -> Self {
         withProperties(\.value.font, font)
     }
     
-    public func withValue(foreground: Color) -> ValueRow {
+    public func withValue(foreground: Color) -> Self {
         withProperties(\.value.foreground, foreground)
     }
     
-    public func withValue(lineLimit: Int?) -> ValueRow {
+    public func withValue(lineLimit: Int?) -> Self {
         withProperties(\.value.lineLimit, lineLimit)
     }
     
-    // MARK: Actions
+    // MARK: Action
     
-    private func withActions<T>(_ keyPath: WritableKeyPath<ValueRowActions, T>, _ value: T) -> ValueRow {
-        var current = self
-        current.actions[keyPath: keyPath] = value
-        return current
-    }
-    
-    public func withImage(action: ValueRowActions.ActionType?) -> ValueRow {
+    public func withImage(action: ActionType?) -> Self {
         withActions(\.image, action)
     }
     
-    public func withLabel(action: ValueRowActions.ActionType?) -> ValueRow {
+    public func withLabel(action: ActionType?) -> Self {
         withActions(\.label, action)
     }
     
-    public func withValue(action: ValueRowActions.ActionType?) -> ValueRow {
+    public func withValue(action: ActionType?) -> Self {
         withActions(\.value, action)
     }
 }
 
 
-// MARK: - ValueRowComponents
-
-private struct ValueRowComponents {
-    var image: Image?
-    var label: Text?
-    var value: Text?
-}
-
-
-// MARK: - ValueRowProperties
-
-public struct ValueRowProperties {
+extension ValueRow {
     
-    public var content = Content()
-    public var image = Image()
-    public var label = Label()
-    public var value = Value()
+    // MARK: Components
+ 
+    private struct Components {
+        var image: Image?
+        var label: Text?
+        var value: Text?
+    }
     
-    public init() {}
-    
-    public struct Content {
+    // MARK: Properties
+
+    public struct Properties {
+        public var content = ContentProperties()
+        public var image = ImageProperties()
+        public var label = LabelProperties()
+        public var value = ValueProperties()
+        public init() {}
+    }
+
+    public struct ContentProperties {
         public var alignment: VerticalAlignment = .center
         public var spacing: CGFloat?
+        public init() {}
     }
 
-    public struct Image {
+    public struct ImageProperties {
         public var font: Font?
-        public var scale: SwiftUI.Image.Scale = .medium
+        public var scale: Image.Scale = .medium
         public var foreground: Color = .accentColor
+        public init() {}
     }
 
-    public struct Label {
+    public struct LabelProperties {
         public var font: Font?
         public var foreground: Color = .primary
         public var lineLimit: Int?
+        public init() {}
     }
 
-    public struct Value {
+    public struct ValueProperties {
         public var font: Font?
         public var foreground: Color = .secondary
         public var lineLimit: Int?
+        public init() {}
     }
-}
-
-
-// MARK: - ValueRowActions
-
-public struct ValueRowActions {
     
-    var image: ActionType?
-    var label: ActionType?
-    var value: ActionType?
+    // MARK: Actions
+
+    public struct Actions {
+        var image: ActionType?
+        var label: ActionType?
+        var value: ActionType?
+    }
+    
+    // MARK: ActionType
     
     public enum ActionType {
         
@@ -244,9 +253,9 @@ public struct ValueRowActions {
 
 // MARK: - View Helper
 
-private extension View {
+fileprivate extension View {
     
-    @ViewBuilder func gesture(_ type: ValueRowActions.ActionType?) -> some View {
+    @ViewBuilder func gesture(_ type: ValueRow.ActionType?) -> some View {
         switch type {
         case nil:
             self
