@@ -20,6 +20,7 @@ struct CheckoutView: View {
         Form {
             Section("ITEM") {
                 ValueRow("Name", value: "Ice Cream")
+                    .withContent(alignment: .firstTextBaseline)
                     .withValue(lineLimit: 2)
                 
                 ValueRow("Price", value: "$4.00")
