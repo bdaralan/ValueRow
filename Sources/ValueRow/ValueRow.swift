@@ -76,17 +76,17 @@ extension ValueRow {
 
 extension ValueRow {
     
-    private func withKeyPath<T>(_ path: WritableKeyPath<ValueRow, T>, _ value: T) -> Self {
+    private func withKeyPath<T>(_ path: WritableKeyPath<ValueRow, T>, _ value: T) -> ValueRow {
         var current = self
         current[keyPath: path] = value
         return current
     }
     
-    public func withProperties<T>(_ path: WritableKeyPath<Properties, T>, _ value: T) -> Self {
+    public func withProperties<T>(_ path: WritableKeyPath<Properties, T>, _ value: T) -> ValueRow {
         withKeyPath((\Self.properties).appending(path: path), value)
     }
     
-    public func withActions<T>(_ path: WritableKeyPath<Actions, T>, _ value: T) -> Self {
+    public func withActions<T>(_ path: WritableKeyPath<Actions, T>, _ value: T) -> ValueRow {
         withKeyPath((\Self.actions).appending(path: path), value)
     }
 }
@@ -98,67 +98,67 @@ extension ValueRow {
     
     // MARK: Content
     
-    public func withContent(alignment: VerticalAlignment) -> Self {
+    public func withContent(alignment: VerticalAlignment) -> ValueRow {
         withProperties(\.content.alignment, alignment)
     }
     
-    public func withContent(spacing: CGFloat?) -> Self {
+    public func withContent(spacing: CGFloat?) -> ValueRow {
         withProperties(\.content.spacing, spacing)
     }
     
     // MARK: Image
     
-    public func withImage(font: Font?) -> Self {
+    public func withImage(font: Font?) -> ValueRow {
         withProperties(\.image.font, font)
     }
     
-    public func withImage(scale: Image.Scale) -> Self {
+    public func withImage(scale: Image.Scale) -> ValueRow {
         withProperties(\.image.scale, scale)
     }
     
-    public func withImage(foreground: Color) -> Self {
+    public func withImage(foreground: Color) -> ValueRow {
         withProperties(\.image.foreground, foreground)
     }
     
     // MARK: Label
     
-    public func withLabel(font: Font?) -> Self {
+    public func withLabel(font: Font?) -> ValueRow {
         withProperties(\.label.font, font)
     }
     
-    public func withLabel(foreground: Color) -> Self {
+    public func withLabel(foreground: Color) -> ValueRow {
         withProperties(\.label.foreground, foreground)
     }
     
-    public func withLabel(lineLimit: Int?) -> Self {
+    public func withLabel(lineLimit: Int?) -> ValueRow {
         withProperties(\.label.lineLimit, lineLimit)
     }
     
     // MARK: Value
     
-    public func withValue(font: Font?) -> Self {
+    public func withValue(font: Font?) -> ValueRow {
         withProperties(\.value.font, font)
     }
     
-    public func withValue(foreground: Color) -> Self {
+    public func withValue(foreground: Color) -> ValueRow {
         withProperties(\.value.foreground, foreground)
     }
     
-    public func withValue(lineLimit: Int?) -> Self {
+    public func withValue(lineLimit: Int?) -> ValueRow {
         withProperties(\.value.lineLimit, lineLimit)
     }
     
     // MARK: Action
     
-    public func withImage(action: ActionType?) -> Self {
+    public func withImage(action: ActionType?) -> ValueRow {
         withActions(\.image, action)
     }
     
-    public func withLabel(action: ActionType?) -> Self {
+    public func withLabel(action: ActionType?) -> ValueRow {
         withActions(\.label, action)
     }
     
-    public func withValue(action: ActionType?) -> Self {
+    public func withValue(action: ActionType?) -> ValueRow {
         withActions(\.value, action)
     }
 }
